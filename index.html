@@ -88,7 +88,7 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
  <div class="stat"><small>Điểm</small><strong id="score">0</strong></div>
  <div class="stat"><small>Đã học</small><strong id="attempted">0</strong></div>
  <div class="stat"><small>Đúng</small><strong id="correct">0</strong></div>
- <div class="stat"><small>Đang tải...</small><strong id="cloudStatus">Cloud</strong></div>
+ <div class="stat"><small>Trạng thái</small><strong id="cloudStatus">Cloud</strong></div>
 </div>
 
 <div class="layout">
@@ -131,7 +131,7 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
   <div class="muted" id="progressText">Đang đồng bộ dữ liệu...</div>
 
   <div class="label">DỊCH CÂU TIẾNG VIỆT SANG TIẾNG ANH</div>
-  <div class="question" id="question">Đang tải câu hỏi từ Supabase...</div>
+  <div class="question" id="question">Đang tải câu hỏi...</div>
 
   <div class="label">SẮP XẾP CÁC MẢNH GHÉP CẤU TRÚC</div>
   <div class="drop" id="selected"></div>
@@ -168,7 +168,6 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
 </div>
 
 <script>
-// Dữ liệu mẫu dự phòng khi chưa cấu hình Supabase
 const FALLBACK_BANK = [
 {id:"a1-01",level:"A1",topic:"Câu đơn khẳng định",vi:"Tôi là một học sinh chăm chỉ.",parts:["I","am","a hard-working student."],grammar:["S + am/is/are + danh từ."],vocab:["student: học sinh"]},
 {id:"a2-01",level:"A2",topic:"Quá khứ đơn",vi:"Hôm qua tôi đã xem một bộ phim hay.",parts:["I","watched","a wonderful movie","yesterday."],grammar:["S + V2/ed diễn tả hành động quá khứ."],vocab:["wonderful: tuyệt vời"]},
@@ -363,7 +362,6 @@ function next() {
 
 function previous() { if(position > 0) { position--; loadQuestion(); } }
 
-// Setup modal events
 $("openConfigBtn").onclick = () => {
  $("sbUrl").value = localStorage.getItem("sb_url") || "";
  $("sbKey").value = localStorage.getItem("sb_key") || "";
@@ -401,7 +399,6 @@ $("backAll").onclick = () => { mode = "all"; refresh(); };
 $("search").oninput = refresh;
 $("sort").onchange = refresh;
 
-// Khởi chạy
 initSupabase();
 </script>
 </body>
