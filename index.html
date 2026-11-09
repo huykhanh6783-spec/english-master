@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>English Master Pro - Supabase Cloud</title>
+<title>English Master Pro - Supabase Edition</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--p:#4f46e5;--bg:#f5f7fb;--text:#172033;--muted:#64748b;--border:#e2e8f0;--green:#059669}
@@ -15,7 +15,6 @@ button{cursor:pointer}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:10px}
 .brand{font-size:12px;letter-spacing:2px;color:var(--p);font-weight:bold}
 h1{margin:5px 0 0;font-size:24px}
-.sub{color:var(--muted);font-size:13px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
 .stat,.card{background:white;border:1px solid var(--border);border-radius:14px;padding:15px}
 .stat small{color:var(--muted);font-size:12px}
@@ -46,34 +45,15 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
 .btn:hover{filter:brightness(.93)}
 .btn.gray{background:#e2e8f0;color:#334155}
 .btn.green{background:var(--green)}
-.btn.red{background:#fee2e2;color:#991b1b}
 .btn:disabled{opacity:.4}
 .feedback{display:none;margin-top:18px;padding:15px;background:#f1f5f9;border-radius:10px;line-height:1.7}
 .feedback h3{margin-top:0;font-size:16px}
 .answer{font-weight:bold;color:var(--green);font-size:16px}
 .feedback h4{color:var(--p);margin:12px 0 4px;font-size:13px}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
-.modal.hidden{display:none}
-.modal-content{background:white;padding:25px;border-radius:14px;width:90%;max-width:450px}
 @media(max-width:720px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-
-<div id="configModal" class="modal hidden">
- <div class="modal-content">
-  <h3>⚙️ Cấu hình Supabase</h3>
-  <p class="muted" style="margin-bottom:12px">Nhập thông tin từ Project Settings > API trên Supabase của bạn:</p>
-  <label class="label">SUPABASE URL</label>
-  <input type="text" id="sbUrl" placeholder="https://xxxx.supabase.co">
-  <label class="label">SUPABASE ANON KEY</label>
-  <input type="text" id="sbKey" placeholder="eyJhbGciOiJIUzI1Ni...">
-  <div class="actions" style="margin-top:15px">
-   <button class="btn" id="saveConfig">Kết nối & Lưu</button>
-   <button class="btn gray" id="closeConfig">Đóng</button>
-  </div>
- </div>
-</div>
 
 <div class="app">
 <header>
@@ -81,14 +61,13 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
   <div class="brand">ENGLISH MASTER PRO</div>
   <h1>🧩 Luyện Ghép Câu Cloud</h1>
  </div>
- <button class="btn gray" id="openConfigBtn">⚙️ Cấu hình Supabase</button>
 </header>
 
 <div class="stats">
  <div class="stat"><small>Điểm</small><strong id="score">0</strong></div>
  <div class="stat"><small>Đã học</small><strong id="attempted">0</strong></div>
  <div class="stat"><small>Đúng</small><strong id="correct">0</strong></div>
- <div class="stat"><small>Trạng thái</small><strong id="cloudStatus">Cloud</strong></div>
+ <div class="stat"><small>Kết nối</small><strong id="cloudStatus">Đang nối...</strong></div>
 </div>
 
 <div class="layout">
@@ -113,7 +92,7 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
 
 <main>
  <div class="toolbar">
-  <input type="text" id="search" placeholder="Tìm kiếm câu hỏi, chủ đề...">
+  <input type="text" id="search" placeholder="Tìm kiếm câu hỏi...">
   <select id="sort">
    <option value="normal">Thứ tự mặc định</option>
    <option value="random">Xáo trộn ngẫu nhiên</option>
@@ -128,10 +107,10 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
   </div>
 
   <div class="bar"><div id="progressBar"></div></div>
-  <div class="muted" id="progressText">Đang đồng bộ dữ liệu...</div>
+  <div class="muted" id="progressText">Đang tải dữ liệu...</div>
 
   <div class="label">DỊCH CÂU TIẾNG VIỆT SANG TIẾNG ANH</div>
-  <div class="question" id="question">Đang tải câu hỏi...</div>
+  <div class="question" id="question">Đang kết nối Supabase...</div>
 
   <div class="label">SẮP XẾP CÁC MẢNH GHÉP CẤU TRÚC</div>
   <div class="drop" id="selected"></div>
@@ -160,7 +139,6 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
 
  <div class="card hidden" id="empty" style="text-align:center;padding:35px 15px">
   <h2>🎉 Đã hoàn thành phần này!</h2>
-  <p class="muted" style="margin:12px 0">Không còn câu hỏi nào trong danh sách này.</p>
   <button class="btn" id="backAll">Quay lại học tất cả</button>
  </div>
 </main>
@@ -168,45 +146,44 @@ select,input{width:100%;padding:10px;border:1px solid var(--border);border-radiu
 </div>
 
 <script>
+// =========================================================
+// HÃY DÁN SUPABASE URL VÀ ANON KEY CỦA BẠN VÀO DƯỚI ĐÂY:
+// =========================================================
+const MY_SUPABASE_URL = "https://dwebocmkerfjzfsmgysp.supabase.co/rest/v1/";
+const MY_SUPABASE_KEY = "sb_publishable_8-B_JTOIG0N_6bCD5Ie2dQ_POoBwWRd";
+// =========================================================
+
 const FALLBACK_BANK = [
-{id:"a1-01",level:"A1",topic:"Câu đơn khẳng định",vi:"Tôi là một học sinh chăm chỉ.",parts:["I","am","a hard-working student."],grammar:["S + am/is/are + danh từ."],vocab:["student: học sinh"]},
-{id:"a2-01",level:"A2",topic:"Quá khứ đơn",vi:"Hôm qua tôi đã xem một bộ phim hay.",parts:["I","watched","a wonderful movie","yesterday."],grammar:["S + V2/ed diễn tả hành động quá khứ."],vocab:["wonderful: tuyệt vời"]},
-{id:"b1-01",level:"B1",topic:"Mệnh đề quan hệ",vi:"Người đàn ông đứng ở cửa là giáo viên của tôi.",parts:["The man","who is standing","at the door","is my teacher."],grammar:["Who thay thế cho người."],vocab:["teacher: giáo viên"]},
-{id:"b2-01",level:"B2",topic:"Phrasal Verbs",vi:"Cô ấy quyết định nhận thử thách mới.",parts:["She decided to","take on","the new challenge."],grammar:["Take on: đảm nhận thử thách."],vocab:["challenge: thử thách"]},
-{id:"c1-01",level:"C1",topic:"Đảo ngữ nâng cao",vi:"Hiếm khi chúng ta chứng kiến sự thay đổi lớn đến vậy.",parts:["Rarely do we","witness","such a significant change."],grammar:["Rarely + trợ động từ + S + V."],vocab:["witness: chứng kiến"]}
+{id:"a1-01",level:"A1",topic:"Câu đơn",vi:"Tôi là một học sinh chăm chỉ.",parts:["I","am","a hard-working student."],grammar:["S + am/is/are + N."],vocab:["student: học sinh"]},
+{id:"c1-01",level:"C1",topic:"Đảo ngữ",vi:"Hiếm khi chúng ta chứng kiến sự thay đổi lớn đến vậy.",parts:["Rarely do we","witness","such a significant change."],grammar:["Rarely + trợ động từ + S + V."],vocab:["witness: chứng kiến"]}
 ];
 
 let questions = FALLBACK_BANK;
 let supabaseClient = null;
-
 const $ = id => document.getElementById(id);
 let data = load("master-progress", {attempted:[], correct:[], wrong:[], favorites:[], score:0});
 let level = "ALL", mode = "all", list = [], position = 0;
 let selected = [], pieces = [], checked = false;
 
-function load(k, def) {
- try { return JSON.parse(localStorage.getItem(k)) || def; } catch(e) { return def; }
-}
+function load(k, def) { try { return JSON.parse(localStorage.getItem(k)) || def; } catch(e) { return def; } }
 function save() { localStorage.setItem("master-progress", JSON.stringify(data)); }
 
 async function initSupabase() {
- let url = localStorage.getItem("sb_url");
- let key = localStorage.getItem("sb_key");
- if (url && key) {
+ if (MY_SUPABASE_URL.includes("http") && MY_SUPABASE_KEY.length > 20) {
   try {
-   supabaseClient = supabase.createClient(url, key);
+   supabaseClient = supabase.createClient(MY_SUPABASE_URL, MY_SUPABASE_KEY);
    let { data: rows, error } = await supabaseClient.from('questions').select('*');
    if (!error && rows && rows.length > 0) {
     questions = rows;
     $("cloudStatus").textContent = "Cloud (" + rows.length + ")";
    } else {
-    $("cloudStatus").textContent = "Lỗi kết nối";
+    $("cloudStatus").textContent = "Dùng mẫu (Lỗi SQL)";
    }
   } catch(e) {
-   $("cloudStatus").textContent = "Lỗi API";
+   $("cloudStatus").textContent = "Dùng mẫu (Lỗi Key)";
   }
  } else {
-  $("cloudStatus").textContent = "Mẫu (Offline)";
+  $("cloudStatus").textContent = "Dùng câu mẫu";
  }
  refresh();
 }
@@ -230,10 +207,7 @@ function getList() {
  return a;
 }
 
-function refresh() {
- list = getList(); position = 0; loadQuestion(); stats();
-}
-
+function refresh() { list = getList(); position = 0; loadQuestion(); stats(); }
 function stats() {
  $("score").textContent = data.score;
  $("attempted").textContent = data.attempted.length;
@@ -251,8 +225,8 @@ function loadQuestion() {
  $("topicBadge").textContent = q.topic;
  $("numberBadge").textContent = (position+1) + "/" + list.length;
  $("question").textContent = q.vi;
- $("progressText").textContent = "Câu " + (position+1) + " trong " + list.length;
- $("progressBar").style.width = (position / list.length * 100) + "%";
+ $("progressText").textContent = "Câu " + (position+1) + " / " + list.length;
+ $("progressBar").style.width = ((position+1) / list.length * 100) + "%";
  $("feedback").style.display = "none";
  $("actions").classList.remove("hidden");
  $("favorite").textContent = data.favorites.includes(q.id) ? "★ Lưu" : "☆ Lưu";
@@ -262,8 +236,7 @@ function loadQuestion() {
 }
 
 function render() {
- $("selected").innerHTML = "";
- $("pool").innerHTML = "";
+ $("selected").innerHTML = ""; $("pool").innerHTML = "";
  selected.forEach((item, index) => {
   let b = document.createElement("button");
   b.className = "chip selected"; b.textContent = item.word; b.disabled = checked;
@@ -281,14 +254,13 @@ function render() {
 
 function text(parent, tag, value, className) {
  let e = document.createElement(tag); e.textContent = value;
- if(className) e.className = className;
- parent.appendChild(e);
+ if(className) e.className = className; parent.appendChild(e);
 }
 
 function check() {
  if(checked) return;
  let q = list[position];
- if(selected.length !== q.parts.length) { alert("Hãy chọn đủ các mảnh ghép từ."); return; }
+ if(selected.length !== q.parts.length) { alert("Hãy chọn đủ các mảnh ghép!"); return; }
  let ok = selected.every((x, i) => x.index === i);
  checked = true;
  if(!data.attempted.includes(q.id)) data.attempted.push(q.id);
@@ -298,8 +270,7 @@ function check() {
  } else {
   if(!data.wrong.includes(q.id)) data.wrong.push(q.id);
  }
- save(); stats(); render();
- showResult(q, ok);
+ save(); stats(); render(); showResult(q, ok);
 }
 
 function showResult(q, ok) {
@@ -307,80 +278,26 @@ function showResult(q, ok) {
  let box = $("feedback"), out = $("result");
  box.style.display = "block"; out.innerHTML = "";
  text(out, "h3", ok ? "✓ Chính xác! +10 điểm" : "✗ Chưa chính xác");
- text(out, "p", "CẤU TRÚC CHUẨN", ""); 
  text(out, "p", q.parts.join(" "), "answer");
  text(out, "h4", "NGỮ PHÁP");
- q.grammar.forEach(x => text(out, "p", "• " + x));
+ (q.grammar || []).forEach(x => text(out, "p", "• " + x));
  text(out, "h4", "TỪ VỰNG");
- q.vocab.forEach(x => text(out, "p", "• " + x));
- if(!ok) {
-  let b = document.createElement("button");
-  b.className = "btn gray"; b.textContent = "Thử lại câu này";
-  b.onclick = retry; out.appendChild(b);
- }
+ (q.vocab || []).forEach(x => text(out, "p", "• " + x));
 }
 
-function retry() {
- selected = []; checked = false;
- $("feedback").style.display = "none";
- $("actions").classList.remove("hidden");
- render();
-}
-
-function hint() {
- if(checked) return;
- let q = list[position];
- alert("Gợi ý: Mảnh đầu tiên là \"" + q.parts[0] + "\"");
-}
-
-function favorite() {
- let id = list[position].id;
- if(data.favorites.includes(id)) {
-  data.favorites = data.favorites.filter(x => x !== id);
- } else data.favorites.push(id);
- save(); loadQuestion(); stats();
-}
-
+function retry() { selected = []; checked = false; $("feedback").style.display = "none"; $("actions").classList.remove("hidden"); render(); }
 function speak() {
- let q = list[position];
- if(!q) return;
- if(!("speechSynthesis" in window)) { alert("Trình duyệt không hỗ trợ đọc."); return; }
+ let q = list[position]; if(!q || !("speechSynthesis" in window)) return;
  speechSynthesis.cancel();
- let u = new SpeechSynthesisUtterance(q.parts.join(" "));
- u.lang = "en-US"; u.rate = 0.85;
+ let u = new SpeechSynthesisUtterance(q.parts.join(" ")); u.lang = "en-US"; u.rate = 0.85;
  speechSynthesis.speak(u);
 }
-
-function next() {
- if(!checked) { alert("Hãy kiểm tra đáp án trước."); return; }
- if(position < list.length - 1) { position++; loadQuestion(); }
- else {
-  $("lesson").classList.add("hidden");
-  $("empty").classList.remove("hidden");
- }
-}
-
-function previous() { if(position > 0) { position--; loadQuestion(); } }
-
-$("openConfigBtn").onclick = () => {
- $("sbUrl").value = localStorage.getItem("sb_url") || "";
- $("sbKey").value = localStorage.getItem("sb_key") || "";
- $("configModal").classList.remove("hidden");
-};
-$("closeConfigBtn").onclick = () => $("configModal").classList.add("hidden");
-$("saveConfig").onclick = () => {
- localStorage.setItem("sb_url", $("sbUrl").value.trim());
- localStorage.setItem("sb_key", $("sbKey").value.trim());
- $("configModal").classList.add("hidden");
- initSupabase();
-};
 
 document.querySelectorAll("[data-level]").forEach(b => b.onclick = () => {
  level = b.dataset.level;
  document.querySelectorAll("[data-level]").forEach(x => x.classList.toggle("active", x === b));
  refresh();
 });
-
 document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => {
  mode = b.dataset.mode;
  document.querySelectorAll("[data-mode]").forEach(x => x.classList.toggle("active", x === b));
@@ -389,10 +306,19 @@ document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => {
 
 $("check").onclick = check;
 $("reset").onclick = () => { if(!checked) { selected = []; render(); } };
-$("hint").onclick = hint;
-$("favorite").onclick = favorite;
-$("next").onclick = next;
-$("previous").onclick = previous;
+$("hint").onclick = () => { if(!checked) alert("Mảnh đầu: " + list[position].parts[0]); };
+$("favorite").onclick = () => {
+ let id = list[position].id;
+ if(data.favorites.includes(id)) data.favorites = data.favorites.filter(x => x !== id);
+ else data.favorites.push(id);
+ save(); loadQuestion(); stats();
+};
+$("next").onclick = () => {
+ if(!checked) { alert("Bấm Kiểm tra trước nhé!"); return; }
+ if(position < list.length - 1) { position++; loadQuestion(); }
+ else { $("lesson").classList.add("hidden"); $("empty").classList.remove("hidden"); }
+};
+$("previous").onclick = () => { if(position > 0) { position--; loadQuestion(); } };
 $("retry").onclick = retry;
 $("speak").onclick = speak;
 $("backAll").onclick = () => { mode = "all"; refresh(); };
